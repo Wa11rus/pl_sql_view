@@ -1,46 +1,44 @@
 import csv
 import cx_Oracle
-from datetime import datetime
 
-username = 'asd'
-password = 'asd'
+username = 'crispyyv'
+password = '19680401'
 database = 'localhost/xe'
 
 connection = cx_Oracle.connect(username, password, database)
 cursor = connection.cursor()
 
-filename = "cars_ver2.csv"
+filename = "fire_archive_M6_96619.csv"
 
+
+connection.commit()
 with open(filename, newline='') as file:
     reader = csv.DictReader(file)
     i = 1
 
     try:
-        for row in reader:
-            title = row['title']
-            pub_date = row['pub_date']
-            city = row['city']
-            region = row['region']
-            mark = row['mark']
-            model = row['model']
-            year = int(row['year'])
-            mileage = int(row['mileage'])
-            price = int(row['price'])
 
-            insert = """INSERT INTO car ( car_id, model, mark, year, mileage)
-                            values (:car_id, :model, :mark, :year, :mileage)"""
-            cursor.execute(insert, car_id=i, model=model, mark=mark, year=year, mileage=mileage)
-            insert = """INSERT INTO location ( location_id, region, city)
-                values (:location_id, :region , :city)"""
-            cursor.execute(insert, location_id=i, region=region, city=city)
-            insert = """INSERT INTO olx_info ( price, title, pub_date, location_id, car_id)
-                values (:price, :title , TO_DATE(:pub_date), :location_id, :car_id)"""
-            cursor.execute(insert, price=price, title=title, pub_date=pub_date, location_id=i, car_id=i)
+        for el in reader:
+            latitude = float(el['latitude'])
+            longitude = float(el['longitude'])
+            brightness = float(el['brightness'])
+            confidence = int(el['confidence'])
+            frp = float(el['frp'])
 
+            query = """INSERT INTO locations(location_id, longitude, latitude) VALUES(:location_id, :longitude,
+            :latitude) """
+            cursor.execute(query, location_id=i, longitude=longitude, latitude=latitude)
+            query = """ INSERT INTO params(params_id, brightness, frp) VALUES(:params_id, :brightness, :frp)"""
+            cursor.execute(query, params_id=i, brightness=brightness, frp=frp)
+            query = """begin INSERT INTO confidence(confidence) VALUES(:confidence); exception when dup_val_on_index then  
+            null; END; """
+            cursor.execute(query, confidence = confidence)
+            query = """INSERT INTO fire_info(fire_id, location_id, params_id, confidence) VALUES(:fire_id,
+            :location_id,:params_id,:confidence) """
+            cursor.execute(query,fire_id=i, location_id=i,params_id=i, confidence=confidence)
             i += 1
 
     except:
-        print(f"Error in line: {i}")
         raise
 
 connection.commit()
