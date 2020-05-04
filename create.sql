@@ -1,7 +1,7 @@
 CREATE TABLE locations (
     location_id   INTEGER NOT NULL PRIMARY KEY,
-    latitude      FLOAT NOT NULL UNIQUE,
-    longitude     FLOAT NOT NULL UNIQUE
+    latitude      FLOAT NOT NULL,
+    longitude     FLOAT NOT NULL
 );
 
 CREATE TABLE params (
@@ -16,8 +16,8 @@ CREATE TABLE confidence (
 
 CREATE TABLE fire_info (
     fire_id       INTEGER NOT NULL PRIMARY KEY,
-    location_id   INTEGER NOT NULL UNIQUE,
-    params_id     INTEGER NOT NULL UNIQUE,
+    location_id   INTEGER NOT NULL,
+    params_id     INTEGER NOT NULL,
     confidence    INTEGER NOT NULL
 );
 
