@@ -5,8 +5,8 @@ import plotly.graph_objs as go
 import re
 import chart_studio.dashboard_objs as dashboard
 
-username = 'crispyyv'
-password = '19680401'
+username = 'asd'
+password = 'asd'
 database = 'localhost/xe'
 
 
@@ -26,26 +26,28 @@ firstQuery = """select
     WHERE
     round(fire_params_locations.latitude, 1) >= - 15.1 and round(fire_params_locations.latitude, 1) <= -14.5
     AND round(fire_params_locations.longitude, 1) >= 135.2 and round(fire_params_locations.longitude, 1) <= 140.1 group by round(latitude, 1) || ' ' || round(longitude, 1)
-
-
 """
 
 secondQuery = """
-    SELECT
-    fire_params_locations.brightness,
+SELECT
+    round(fire_params_locations.brightness) as "rounded brightness",
     COUNT(fire_params_locations.params_id) AS "count of brightness"
 FROM
     fire_params_locations
 GROUP BY
-    fire_params_locations.brightness
+    round(fire_params_locations.brightness)
 """
 
 thirdQuery = """
  SELECT
-    fire_id,
+    count(fire_id) as "count_of_fires",
     confidence
 FROM
     fire_params_locations
+   
+    group by 
+     confidence
+    order by count(fire_id)
 """
 
 cursor.execute(firstQuery)
@@ -54,7 +56,6 @@ coords = []
 fire_count = []
 
 for row in cursor:
-    print(row)
     fire_count += [row[0]]
     coords +=[row[1]]
 data = [go.Bar(
@@ -102,17 +103,17 @@ fire_brightness = py.plot([pie], filename ='fire-brightness')
 
 cursor.execute(thirdQuery)
 
-fire_id = []
+count_fire_id = []
 cofidence = []
 
 for row in cursor:
-    fire_id += [row[0]]
+    count_fire_id += [row[0]]
     cofidence += [row[1]]
 
 
 car_prices = go.Scatter(
-    x=cofidence,
-    y=fire_id,
+    x=count_fire_id,
+    y=cofidence,
     mode='lines+markers'
 )
 
