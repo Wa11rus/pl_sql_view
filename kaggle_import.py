@@ -1,8 +1,8 @@
 import csv
 import cx_Oracle
 
-username = 'crispyyv'
-password = '19680401'
+username = 'asd'
+password = 'asd'
 database = 'localhost/xe'
 
 connection = cx_Oracle.connect(username, password, database)
